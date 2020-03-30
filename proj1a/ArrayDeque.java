@@ -5,7 +5,7 @@ public class ArrayDeque<T> {
     private int nextLast;  // a pointer to the nextLast position
 
     /* Creates a starting array of 8 memory boxes. */
-    public ArrayDeque(){
+    private ArrayDeque() {
         array = (T[]) new Object[8];
         size = 0;
         nextFirst = 0;
@@ -13,13 +13,13 @@ public class ArrayDeque<T> {
     }
 
     /* Checks if the array is full of capacity. */
-    private boolean isFull(){
+    private boolean isFull() {
         return size == array.length;
     }
 
     /* Update the index non-destructively by 1 circularly. */
-    private int update(int index, String dir){
-        if (dir == "add") {
+    private int update(int index, String dir) {
+        if (dir.equals("add")) {
             return (index + 1) % array.length;
         }
         return (index - 1 + array.length) % array.length;
@@ -36,7 +36,7 @@ public class ArrayDeque<T> {
     }
 
     /* Adds an item of type T to the back of the deque. */
-    public void addLast(T item){
+    public void addLast(T item) {
         if (isFull()){
             resize();
         }
@@ -46,9 +46,9 @@ public class ArrayDeque<T> {
     }
 
     /* Calculates the usage factor for arrays of length 16 or more. */
-    private double usage(){
+    private double usage() {
         if (array.length >= 16) {
-            return size / array.length;
+            return (double)(size) / (double)(array.length);
         }
         return 0.25;
     }
@@ -56,35 +56,37 @@ public class ArrayDeque<T> {
     /* Resizes the deque when necessary. */
     private void resize(){
         int refactor = 2;
+        int resized;
         T[] newArray;
         // Expand the deque
         if (isFull()) {
-            newArray = (T[]) new Object[size * refactor];
-        }else{
-            newArray = (T[]) new Object[size / refactor];
+            resized = size * refactor;
+        } else {
+            resized = size / refactor;
         }
+        newArray = (T[]) new Object[resized];
         int old = update(nextFirst, "add");
-        for(int i = 0; i < size; i++){
+        for (int i = 0; i < size; i++) {
             newArray[i] = array[old];
             old = update(old, "add");
         }
         array = newArray;
-        nextFirst = size * refactor - 1;
+        nextFirst = resized - 1;
         nextLast = size;
     }
 
     /* Returns true if deque is empty, false otherwise. */
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return size == 0;
     }
 
     /* Returns the number of items in the deque. */
-    public int size(){
+    public int size() {
         return size;
     }
 
     /* Prints the items in the deque from first to last, separated by a space. */
-    public void printDeque(){
+    public void printDeque() {
         int i = update(nextFirst,"add");
         for (int j = 0; j < size; j++) {
             System.out.print(array[i] + " ");
@@ -95,8 +97,8 @@ public class ArrayDeque<T> {
 
     /* Removes and returns the item at the front of the deque.
         If no such item exists, returns null. */
-    public T removeFirst(){
-        if (usage() < 0.25){
+    public T removeFirst() {
+        if (usage() < 0.25) {
             resize();
         }
         nextFirst = update(nextFirst, "add");
@@ -110,8 +112,8 @@ public class ArrayDeque<T> {
 
     /* Removes and returns the item at the back of the deque.
         If no such item exists, returns null. */
-    public T removeLast(){
-        if (usage() < 0.25){
+    public T removeLast() {
+        if (usage() < 0.25) {
             resize();
         }
         nextLast = update(nextLast, "minus");
@@ -126,10 +128,10 @@ public class ArrayDeque<T> {
     /* Gets the item at the given index, where 0 is the front,
          1 is the next item, and so forth. If no such item exists,
          returns null. */
-    public T get(int index){
-        if (index < 0){
+    public T get(int index) {
+        if (index >= size) {
             return null;
         }
-        return array[update(nextFirst,"add") + index];
+        return array[(update(nextFirst, "add") + index) % array.length];
     }
 }
