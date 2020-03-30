@@ -1,3 +1,6 @@
+/* An ArrayDeque Class of Generic Type.
+ *	This class implements a Double Ended Queue using a circular array.*/
+
 public class ArrayDeque<T> {
     private T[] array;
     private int size;
@@ -59,12 +62,14 @@ public class ArrayDeque<T> {
         int refactor = 2;
         int resized;
         T[] newArray;
-        // Expand the deque
+        // Expands the deque when it's full.
         if (isFull()) {
             resized = array.length * refactor;
         } else {
+            // Downsizes the deque when usage is under 25%
             resized = array.length / refactor;
         }
+        // Copies the elements into the resized array starting from index 0.
         newArray = (T[]) new Object[resized];
         int old = update(nextFirst, "add");
         for (int i = 0; i < size; i++) {

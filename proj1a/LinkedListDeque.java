@@ -1,4 +1,6 @@
-/* A LinkedListDeque Class of Generic Type */
+/* A LinkedListDeque Class of Generic Type.
+*	This class implements a Double Ended Queue using doubly and circularly linked list.*/
+
 public class LinkedListDeque<T> {
 	private class Node {
 		private Node prev;
@@ -11,6 +13,7 @@ public class LinkedListDeque<T> {
 			next = n;
 		}
 	}
+
 	/* A sentinel node that is always there. The first element goes after it. */
 	private Node sentinel;
 	private int size;
