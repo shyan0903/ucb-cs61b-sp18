@@ -5,7 +5,7 @@ public class ArrayDeque<T> {
     private int nextLast;  // a pointer to the nextLast position
 
     /* Creates a starting array of 8 memory boxes. */
-    private ArrayDeque() {
+    public ArrayDeque() {
         array = (T[]) new Object[8];
         size = 0;
         nextFirst = 0;
@@ -48,7 +48,8 @@ public class ArrayDeque<T> {
     /* Calculates the usage factor for arrays of length 16 or more. */
     private double usage() {
         if (array.length >= 16) {
-            return (double)(size) / (double)(array.length);
+            // Needs to type casts the division to have a double result
+            return (double) size / array.length;
         }
         return 0.25;
     }
