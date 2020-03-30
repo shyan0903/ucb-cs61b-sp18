@@ -27,7 +27,7 @@ public class ArrayDeque<T> {
 
     /* Adds an item of type T to the front of the deque. */
     public void addFirst(T item) {
-        if (isFull()){
+        if (isFull()) {
             resize();
         }
         array[nextFirst] = item;
@@ -37,7 +37,7 @@ public class ArrayDeque<T> {
 
     /* Adds an item of type T to the back of the deque. */
     public void addLast(T item) {
-        if (isFull()){
+        if (isFull()) {
             resize();
         }
         array[nextLast] = item;
@@ -55,15 +55,15 @@ public class ArrayDeque<T> {
     }
 
     /* Resizes the deque when necessary. */
-    private void resize(){
+    private void resize() {
         int refactor = 2;
         int resized;
         T[] newArray;
         // Expand the deque
         if (isFull()) {
-            resized = size * refactor;
+            resized = array.length * refactor;
         } else {
-            resized = size / refactor;
+            resized = array.length / refactor;
         }
         newArray = (T[]) new Object[resized];
         int old = update(nextFirst, "add");
@@ -88,7 +88,7 @@ public class ArrayDeque<T> {
 
     /* Prints the items in the deque from first to last, separated by a space. */
     public void printDeque() {
-        int i = update(nextFirst,"add");
+        int i = update(nextFirst, "add");
         for (int j = 0; j < size; j++) {
             System.out.print(array[i] + " ");
             i = update(i, "add");
