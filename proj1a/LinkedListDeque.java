@@ -23,33 +23,19 @@ public class LinkedListDeque<T>{
 		size = 0;
 	}
 
-	/* The constructor for LinkedListDeque that takes in a value for the first element. */
-	public LinkedListDeque(T item){
-		sentinel = new Node(null, null, null);
-		sentinel.next = new Node(sentinel, item, sentinel);
-		sentinel.prev = sentinel.next;
-		size = 1;
-	}
-
 	/* Adds an item of type T to the front of the deque. */
-	public void addFirst(T item){
+	public void addFirst(T item) {
 		size++;
 		sentinel.next = new Node(sentinel, item, sentinel.next);
-		if (size == 1) {
-			sentinel.prev = sentinel.next;
-		}
+		sentinel.next.next.prev = sentinel.next;
 	}
 
 	/* Adds an item of type T to the back of the deque. */
 	public void addLast(T item){
 		size++;
-		Node originalLast = sentinel.prev;
-		Node last = new Node(originalLast, item, sentinel);
-		originalLast.next = last;
-		sentinel.prev = last;
-		if (size == 1){
-			sentinel.next = sentinel.prev;
-		}
+		sentinel.prev = new Node(sentinel.prev, item, sentinel);
+		sentinel.prev.prev.next = sentinel.prev;
+
 	}
 
 	/* Returns true if deque is empty, false otherwise. */
@@ -77,33 +63,25 @@ public class LinkedListDeque<T>{
 	/* Removes and returns the item at the front of the deque.
 		If no such item exists, returns null. */
 	public T removeFirst(){
+		T removed = sentinel.next.item;
 		if (size > 0){
 			size--;
-			T removed = sentinel.next.item;
 			sentinel.next = sentinel.next.next;
-			if (size == 0){
-				sentinel.prev = sentinel;
-			}
-			return removed;
+			sentinel.next.next.prev = sentinel;
 		}
-		return null;
+		return removed;
 	}
 
 	/* Removes and returns the item at the back of the deque.
 		If no such item exists, returns null. */
 	public T removeLast(){
+		T removed = sentinel.prev.item;
 		if (size > 0){
 			size--;
-			T removed = sentinel.prev.item;
-			Node secondToLast = sentinel.prev.prev;
-			sentinel.prev = secondToLast;
-			secondToLast.next = sentinel;
-			if (size == 0){
-				sentinel.next = sentinel;
-			}
-			return removed;
+			sentinel.prev.prev.next = sentinel;
+			sentinel.prev = sentinel.prev.prev;
 		}
-		return null;
+		return removed;
 	}
 
 	/* Gets the item at the given index, where 0 is the front,
@@ -113,10 +91,6 @@ public class LinkedListDeque<T>{
 		// when index is out of bound
 		if (index + 1 > size) {
 			return null;
-		}
-		// gets the first item
-		if (index == 0){
-			return sentinel.next.item;
 		}
 		// move the ptr to the correct position
 		Node ptr = sentinel.next;
@@ -136,11 +110,10 @@ public class LinkedListDeque<T>{
 		return getRecursive(index, sentinel.next);
 	}
 
-	public T getRecursive(int index, Node n){
+	private T getRecursive(int index, Node n){
 		if (index == 0){
 			return n.item;
 		}
 		return getRecursive(index - 1, n.next);
-
 	}
 }
