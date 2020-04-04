@@ -1,7 +1,5 @@
 import org.junit.Test;
 
-import java.util.Deque;
-
 import static org.junit.Assert.*;
 
 /* A class for JUnit tests for Palindrome. */
