@@ -1,5 +1,5 @@
 /* A class that checks if two characters are off by 1. */
-public class OffByOne implements CharacterComparator{
+public class OffByOne implements CharacterComparator {
 
     @Override
     /* Two chars are considered equal if they are off by exactly 1. */

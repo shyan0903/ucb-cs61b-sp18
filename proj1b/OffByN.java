@@ -3,7 +3,7 @@ public class OffByN implements CharacterComparator {
     public int N;
 
     /* A constructor. */
-    public OffByN(int N){
+    public OffByN(int N) {
         this.N = N;
     }
 

@@ -12,7 +12,7 @@ public class TestPalindrome {
 
     @Test
     public void testWordToDeque() {
-        Deque d = palindrome.wordToDeque("persiflage");
+        Deque<Character> d = palindrome.wordToDeque("persiflage");
         String actual = "";
         for (int i = 0; i < "persiflage".length(); i++) {
             actual += d.removeFirst();
@@ -21,7 +21,7 @@ public class TestPalindrome {
     }
 
     @Test
-    public void testIsPalindrome(){
+    public void testIsPalindrome() {
         assertTrue(palindrome.isPalindrome("racecar"));
         assertTrue(palindrome.isPalindrome("a"));
         assertTrue(palindrome.isPalindrome(""));
@@ -31,7 +31,7 @@ public class TestPalindrome {
     }
 
     @Test
-    public void testIsPalindromeOffByOne(){
+    public void testIsPalindromeOffByOne() {
         assertTrue(palindrome.isPalindrome("flake", new OffByOne()));
         assertTrue(palindrome.isPalindrome("f", new OffByOne()));
         assertTrue(palindrome.isPalindrome("", new OffByOne()));
@@ -39,7 +39,7 @@ public class TestPalindrome {
     }
 
     @Test
-    public void testIsPalindromeRecursion(){
+    public void testIsPalindromeRecursion() {
         assertTrue(palindrome.isPalindromeRecursion("racecar"));
         assertTrue(palindrome.isPalindromeRecursion("a"));
         assertTrue(palindrome.isPalindromeRecursion(""));
