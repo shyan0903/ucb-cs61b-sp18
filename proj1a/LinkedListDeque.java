@@ -1,7 +1,7 @@
 /* A LinkedListDeque Class of Generic Type.
 *	This class implements a Double Ended Queue using doubly and circularly linked list.*/
 
-public class LinkedListDeque<T> {
+public class LinkedListDeque<T> implements Deque<T> {
 	private class Node {
 		private Node prev;
 		private T item;
@@ -27,6 +27,7 @@ public class LinkedListDeque<T> {
 	}
 
 	/* Adds an item of type T to the front of the deque. */
+	@Override
 	public void addFirst(T item) {
 		size++;
 		sentinel.next = new Node(sentinel, item, sentinel.next);
@@ -34,6 +35,7 @@ public class LinkedListDeque<T> {
 	}
 
 	/* Adds an item of type T to the back of the deque. */
+	@Override
 	public void addLast(T item) {
 		size++;
 		sentinel.prev = new Node(sentinel.prev, item, sentinel);
@@ -41,16 +43,19 @@ public class LinkedListDeque<T> {
 	}
 
 	/* Returns true if deque is empty, false otherwise. */
+	@Override
 	public boolean isEmpty() {
 		return size == 0;
 	}
 
 	/* Returns the number of items in the deque. */
+	@Override
 	public int size() {
 		return size;
 	}
 
 	/* Prints the items in the deque from first to last, separated by a space. */
+	@Override
 	public void printDeque() {
 		if (size > 0) {
 			Node ptr = sentinel.next;
@@ -64,6 +69,7 @@ public class LinkedListDeque<T> {
 
 	/* Removes and returns the item at the front of the deque.
 		If no such item exists, returns null. */
+	@Override
 	public T removeFirst() {
 		T removed = sentinel.next.item;
 		if (size > 0) {
@@ -76,6 +82,7 @@ public class LinkedListDeque<T> {
 
 	/* Removes and returns the item at the back of the deque.
 		If no such item exists, returns null. */
+	@Override
 	public T removeLast() {
 		T removed = sentinel.prev.item;
 		if (size > 0) {
@@ -89,6 +96,7 @@ public class LinkedListDeque<T> {
 	/* Gets the item at the given index, where 0 is the front,
 	 	1 is the next item, and so forth. If no such item exists,
 	 	returns null. */
+	@Override
 	public T get(int index) {
 		// when index is out of bound
 		if (index + 1 > size)  {
