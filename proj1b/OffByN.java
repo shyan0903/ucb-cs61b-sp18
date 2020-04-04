@@ -1,6 +1,6 @@
 /* A general class that checks if two characters are off by N. */
 public class OffByN implements CharacterComparator {
-    public int N;
+    private int N;
 
     /* A constructor. */
     public OffByN(int N) {
