@@ -1,6 +1,5 @@
 package synthesizer;
 
-//Make sure this class is public
 public class GuitarString {
     /** Constants. Do not change. In case you're curious, the keyword final means
      * the values cannot be changed at runtime. We'll discuss this and other topics
@@ -13,18 +12,20 @@ public class GuitarString {
 
     /* Create a guitar string of the given frequency.  */
     public GuitarString(double frequency) {
-        buffer = new ArrayRingBuffer<Double>((int) Math.round(SR / frequency));
-        for (int i = 0; i < buffer.capacity(); i += 1) {
-            buffer.enqueue((double) 0);
+        buffer = new ArrayRingBuffer<>((int) Math.round(SR / frequency));
+        while (!buffer.isFull()) {
+            buffer.enqueue(0.0);
         }
     }
 
-
     /* Pluck the guitar string by replacing the buffer with white noise. */
     public void pluck() {
-        for (int i = 0; i < buffer.capacity(); i += 1) {
+        while (!buffer.isEmpty()) {
             buffer.dequeue();
-            buffer.enqueue(Math.random() - 0.5);
+        }
+        while (!buffer.isFull()) {
+            double r = Math.random() - 0.5;
+            buffer.enqueue(r);
         }
     }
 
@@ -32,7 +33,9 @@ public class GuitarString {
      * the Karplus-Strong algorithm. 
      */
     public void tic() {
-        buffer.enqueue(0.5 * (buffer.dequeue() + buffer.peek()) * DECAY);
+        double first = buffer.dequeue();
+        double second = buffer.peek();
+        buffer.enqueue((first + second) * 0.5 * DECAY);
     }
 
     /* Return the double at the front of the buffer. */
