@@ -23,8 +23,8 @@ public class PercolationStats {
                 } else {
                     continue;
                 }
-                thresholds[i] = (double) newPercolation.numberOfOpenSites() / N * N;
             }
+            thresholds[i] = (double) newPercolation.numberOfOpenSites() / (N * N);
         }
     }
 

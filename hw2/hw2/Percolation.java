@@ -1,12 +1,16 @@
 package hw2;
 
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+import edu.princeton.cs.algs4.QuickFindUF;
 
 public class Percolation {
     private WeightedQuickUnionUF percolationUnion;
     private int myN;
     private boolean[][] openSites;
     private int numOpen;
+    private int top; // virtual top node
+    private int bottom; // virtual bottom node
+    private WeightedQuickUnionUF percolationUnionNoBottom;
 
     // create N-by-N grid, with all sites initially blocked
     public Percolation(int N) {
@@ -14,9 +18,12 @@ public class Percolation {
             throw new IllegalArgumentException();
         }
         myN = N;
-        percolationUnion = new WeightedQuickUnionUF(N * N);
+        percolationUnion = new WeightedQuickUnionUF(N * N + 2);
+        percolationUnionNoBottom = new WeightedQuickUnionUF(N * N + 1);
         openSites = new boolean[N][N];
         numOpen = 0;
+        top = N * N;
+        bottom = N * N + 1;
     }
 
     /* A helper function that checks whether the input row and col
@@ -50,7 +57,8 @@ public class Percolation {
         return row * myN + col;
     }
 
-    // open the site (row, col) if it is not open already
+    /*  open the site (row, col) if it is not open already
+     */
     public void open(int row, int col) {
         if (!checkValidity(row, col)) {
             throw new IndexOutOfBoundsException();
@@ -58,9 +66,18 @@ public class Percolation {
         if (!isOpen(row, col)) {
             openSites[row][col] = true;
             numOpen += 1;
+            int siteValue = rowColtoN(row, col);
+            if (row == 0) {
+                percolationUnion.union(siteValue, top);
+                percolationUnionNoBottom.union(siteValue, top);
+            } else if (row == myN - 1) {
+                percolationUnion.union(siteValue, bottom);
+            }
+
             for (int i : touchingSites(row, col)) {
                 if (i >= 0) {
-                    percolationUnion.union(rowColtoN(row, col), i);
+                    percolationUnion.union(siteValue, i);
+                    percolationUnionNoBottom.union(siteValue, i);
                 }
             }
         }
@@ -79,13 +96,7 @@ public class Percolation {
         if (!checkValidity(row, col)) {
             throw new IndexOutOfBoundsException();
         }
-        for (int c = 0; c < myN; c++) {
-            if (isOpen(row, col) &&
-                    percolationUnion.connected(rowColtoN(row, col), rowColtoN(0, c))) {
-                return true;
-            }
-        }
-        return false;
+        return percolationUnionNoBottom.connected(rowColtoN(row, col), top);
     }
 
     // number of open sites
@@ -95,32 +106,10 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        for (int i = 0; i < myN; i ++) {
-            if (isFull(myN - 1, i)) {
-                return true;
-            }
-        }
-        return false;
+        return percolationUnion.connected(top, bottom);
     }
 
     // use for unit testing (not required)
     public static void main(String[] args) {
-        Percolation trial = new Percolation(5);
-        trial.open(0,0);
-        System.out.println(trial.isFull(0,0));
-        trial.open(1,1);
-        trial.open(2,2);
-        trial.open(3,1);
-        System.out.println(trial.isOpen(2,1));
-        System.out.println(trial.isOpen(2,2));
-        System.out.println(trial.isFull(3,1));
-        System.out.println(trial.isFull(1,1));
-        trial.open(2,1);
-        trial.open(0,1);
-        trial.open(4,1);
-
-        System.out.println(trial.numberOfOpenSites());
-        System.out.print(trial.percolates());
-
     }
 }
