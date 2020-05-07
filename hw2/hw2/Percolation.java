@@ -70,7 +70,9 @@ public class Percolation {
             if (row == 0) {
                 percolationUnion.union(siteValue, top);
                 percolationUnionNoBottom.union(siteValue, top);
-            } else if (row == myN - 1) {
+            }
+            // should not use else if considering the case when N = 1
+            if (row == myN - 1) {
                 percolationUnion.union(siteValue, bottom);
             }
 
