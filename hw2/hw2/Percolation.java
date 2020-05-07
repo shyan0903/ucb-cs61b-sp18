@@ -1,7 +1,6 @@
 package hw2;
 
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
-import edu.princeton.cs.algs4.QuickFindUF;
 
 public class Percolation {
     private WeightedQuickUnionUF percolationUnion;
@@ -39,8 +38,8 @@ public class Percolation {
         int index = 0;
         for (int i = row - 1; i <= row + 1; i += 2) {
             if (i >= 0 && i < myN && isOpen(i, col)) {
-                    result[index] = rowColtoN(i, col);
-                    index += 1;
+                result[index] = rowColtoN(i, col);
+                index += 1;
             }
         }
         for (int j = col - 1; j <= col + 1; j += 2) {
