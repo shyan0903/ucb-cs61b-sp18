@@ -7,7 +7,7 @@ import java.util.Set;
  *  A hash table-backed Map implementation. Provides amortized constant time
  *  access to elements via get(), remove(), and put() in the best case.
  *
- *  @author Your name here
+ *  @author Irene Yan
  */
 public class MyHashMap<K, V> implements Map61B<K, V> {
 
@@ -23,6 +23,11 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     public MyHashMap() {
         buckets = new ArrayMap[DEFAULT_SIZE];
+        this.clear();
+    }
+
+    public MyHashMap(int initialSize) {
+        buckets = new ArrayMap[initialSize];
         this.clear();
     }
 
@@ -53,21 +58,43 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public V get(K key) {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            throw new IllegalArgumentException("Invalid key input.");
+        }
+        int bucketNum = hash(key);
+        return buckets[bucketNum].get(key);
     }
 
     /* Associates the specified value with the specified key in this map. */
     @Override
     public void put(K key, V value) {
-        throw new UnsupportedOperationException();
+        if (loadFactor() > MAX_LF) {
+            resize(buckets.length * 2);
+        }
+        int bucketNum = hash(key);
+        if (!buckets[bucketNum].containsKey(key)) {
+            size ++;
+        }
+        buckets[bucketNum].put(key, value);
     }
 
     /* Returns the number of key-value mappings in this map. */
     @Override
     public int size() {
-        throw new UnsupportedOperationException();
+        return size;
     }
 
+    /* Resizes the hashtable to keep the load factor low. */
+    private void resize(int capacity) {
+        MyHashMap<K,V> newMap = new MyHashMap<>(capacity);
+        for (ArrayMap<K,V> bucket : buckets) {
+            for (K k : bucket.keySet()) {
+                newMap.put(k, bucket.get(k));
+            }
+        }
+        size = newMap.size;
+        buckets = newMap.buckets;
+    }
     //////////////// EVERYTHING BELOW THIS LINE IS OPTIONAL ////////////////
 
     /* Returns a Set view of the keys contained in this map. */
