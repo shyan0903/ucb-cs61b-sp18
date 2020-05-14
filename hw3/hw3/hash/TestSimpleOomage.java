@@ -25,9 +25,9 @@ public class TestSimpleOomage {
           hashCode UNLESS they have the same red, blue, and green values!
          */
         Set<Integer> hashCodeSet = new HashSet<>();
-        for (int i = 0; i < 51; i += 1) {
-            for (int j = 0; j < 51; j += 1) {
-                for (int k = 0; k < 51; k += 1) {
+        for (int i = 0; i <= 51; i += 1) {
+            for (int j = 0; j <= 51; j += 1) {
+                for (int k = 0; k <= 51; k += 1) {
                     int r = i * 5;
                     int g = j * 5;
                     int b = k * 5;
