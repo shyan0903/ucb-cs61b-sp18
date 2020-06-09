@@ -1,3 +1,4 @@
+/*
 package hw4.puzzle;
 import edu.princeton.cs.algs4.In;
 import org.junit.Test;
@@ -7,10 +8,12 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+*/
 /**
  * Local tester for the Solver class. You'll need to uncomment
  * in order to run the tests.
- */
+ *//*
+
 public class TestSolver {
     public static class BoardPuzzleSolution {
         final String name;
@@ -36,17 +39,21 @@ public class TestSolver {
         }
     }
 
-    /** Takes as input a word puzzle string and returns a WordPuzzle
+    */
+/** Takes as input a word puzzle string and returns a WordPuzzle
      *  object. For example, "kept, tent, kept-kent-tent, 13"
      *  would return a WordPuzzle with start = kept, goal = tent,
      *  numMoves = 2, and possible solution {"kept", "kent", "tent"}.
      *  The last value is not used by this class, and indicates
      *  the number of enqueues used by the reference solution to
      *  solve the puzzle. Returns null if String isn't a valid word puzzle.
-     */
+     *//*
+
     public static WordPuzzleSolution stringToWordPuzzle(String wp) {
         try {
-            /* skip comments and blank lines */
+            */
+/* skip comments and blank lines *//*
+
             if (wp.charAt(0) == '#') {
                 return null;
             }
@@ -62,6 +69,7 @@ public class TestSolver {
         }
     }
 
+*/
 /* Uncomment once you've written Solver.
     @Test(timeout = 10000)
     public void testWordPuzzles() {
@@ -79,9 +87,11 @@ public class TestSolver {
             assertEquals(errorMessage, wps.numMoves, s.moves());
         }
     }
- */
+ *//*
 
- /* Uncomment everything in this block once you've written Board.
+
+ */
+/* Uncomment everything in this block once you've written Board.
      public static Board readBoard(String filename) {
         In in = new In(filename);
         int N = in.readInt();
@@ -145,5 +155,7 @@ public class TestSolver {
             Solver s = new Solver(b);
             assertEquals("Wrong number of moves on " + puzzleName, bps.numMoves, s.moves());
         }
-    }*/
+    }*//*
+
 }
+*/
