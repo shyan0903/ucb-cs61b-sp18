@@ -121,15 +121,7 @@ public class Board implements WorldState {
 
     @Override
     public int hashCode() {
-        int result = 0;
-        int multiplier = 1;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                result += tileAt(i, j) * multiplier;
-                multiplier *= 31;
-            }
-        }
-        return result;
+        return super.hashCode();
     }
 
     /** Returns the string representation of the board.*/
