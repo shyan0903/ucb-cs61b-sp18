@@ -3,7 +3,6 @@ package hw4.puzzle;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.Stack;
 
-import javax.swing.*;
 import java.util.Comparator;
 
 public class Solver {
@@ -14,7 +13,7 @@ public class Solver {
     private int totalEnqueued;
 
 
-    private class SearchNode{
+    private class SearchNode {
         WorldState ws;
         int movesSoFar;
         SearchNode previous;
@@ -70,7 +69,7 @@ public class Solver {
         return solution;
     }
 
-    public int totalEnqueued() {
+    private int totalEnqueued() {
         return totalEnqueued;
     }
 }

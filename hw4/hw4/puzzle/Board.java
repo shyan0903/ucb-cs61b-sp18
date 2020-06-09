@@ -2,11 +2,7 @@ package hw4.puzzle;
 
 import edu.princeton.cs.algs4.Queue;
 
-import javax.swing.*;
-import java.util.HashSet;
-import java.util.Set;
-
-public class Board implements WorldState{
+public class Board implements WorldState {
     private final int[][] tiles;
     private int N;
 
@@ -21,7 +17,7 @@ public class Board implements WorldState{
     }
 
     public int tileAt(int i, int j) {
-        if (i < 0 || i >= N || j < 0 || j>= N) {
+        if (i < 0 || i >= N || j < 0 || j >= N) {
             throw new IndexOutOfBoundsException();
         }
         return tiles[i][j];
@@ -31,6 +27,7 @@ public class Board implements WorldState{
         return N;
     }
 
+    @Override
     public Iterable<WorldState> neighbors() {
         Queue<WorldState> neighbors = new Queue<>();
         int hug = size();
@@ -84,28 +81,26 @@ public class Board implements WorldState{
 
     public int manhattan() {
         int manhattanDistance = 0;
-        int goal = 1;
         for (int i = 0; i < N; i += 1) {
             for (int j = 0; j < N; j += 1) {
                 int actual = tileAt(i, j);
-                if (actual != goal) {
-                    int row = (actual - 1) / N;
-                    int col = (actual - 1) % N;
-                    manhattanDistance += Math.abs(row - i) + Math.abs(col - j);
+                if (actual == 0) {
+                    continue;
                 }
-                goal += 1;
-                if (goal == N * N) {
-                    break;
-                }
+                int row = (actual - 1) / N;
+                int col = (actual - 1) % N;
+                manhattanDistance += Math.abs(row - i) + Math.abs(col - j);
             }
         }
         return manhattanDistance;
     }
 
+    @Override
     public int estimatedDistanceToGoal() {
         return manhattan();
     }
 
+    @Override
     public boolean equals(Object y) {
         if (this == y) {
             return true;
@@ -124,16 +119,27 @@ public class Board implements WorldState{
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        int result = 0;
+        int multiplier = 1;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                result += tileAt(i, j) * multiplier;
+                multiplier *= 31;
+            }
+        }
+        return result;
+    }
 
     /** Returns the string representation of the board.*/
-
+    @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        int N = size();
         s.append(N + "\n");
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                s.append(String.format("%2d ", tileAt(i,j)));
+                s.append(String.format("%2d ", tileAt(i, j)));
             }
             s.append("\n");
         }
