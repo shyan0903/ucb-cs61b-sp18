@@ -71,6 +71,9 @@ public class MergeSort {
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
+        if (items.size() <= 1) {
+            return items;
+        }
         Queue<Queue<Item>> qOfQs = makeSingleItemQueues(items);
         Queue<Queue<Item>> temp = new Queue<>();
         int index = 0;
