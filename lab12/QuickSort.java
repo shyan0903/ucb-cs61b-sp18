@@ -1,4 +1,5 @@
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.Quick;
 
 public class QuickSort {
     /**
@@ -47,13 +48,43 @@ public class QuickSort {
     private static <Item extends Comparable> void partition(
             Queue<Item> unsorted, Item pivot,
             Queue<Item> less, Queue<Item> equal, Queue<Item> greater) {
-        // Your code here!
+        for (Item i : unsorted) {
+            if (i.compareTo(pivot) == 0) {
+                equal.enqueue(i);
+            } else if (i.compareTo(pivot) < 0) {
+                less.enqueue(i);
+            } else {
+                greater.enqueue(i);
+            }
+        }
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> quickSort(
             Queue<Item> items) {
-        // Your code here!
-        return items;
+        if (items.size() <= 1) {
+            return items;
+        }
+        Queue<Item> less = new Queue<>(), equal = new Queue<>(), greater = new Queue<>();
+        Item pivot = QuickSort.getRandomItem(items);
+        QuickSort.partition(items, pivot, less, equal, greater);
+        less = QuickSort.quickSort(less);
+        greater = QuickSort.quickSort(greater);
+        return QuickSort.catenate(QuickSort.catenate(less, equal), greater);
+    }
+
+    public static void main(String[] args) {
+        Queue<Integer> unsortedInts = new Queue<>();
+        Queue<Character> unsortedInts2 = new Queue<>();
+        for (int i = 0; i < 20; i++) {
+            int temp = (int) (Math.random() * 50);
+            unsortedInts.enqueue(temp);
+            unsortedInts2.enqueue((char) temp);
+        }
+        System.out.println(unsortedInts.toString());
+        //System.out.println(unsortedInts2.toString());
+
+        System.out.println(QuickSort.quickSort(unsortedInts));
+        //System.out.println(QuickSort.quickSort(unsortedInts2));
     }
 }

@@ -34,7 +34,15 @@ public class MergeSort {
     /** Returns a queue of queues that each contain one item from items. */
     private static <Item extends Comparable> Queue<Queue<Item>>
             makeSingleItemQueues(Queue<Item> items) {
-        // Your code here!
+        Queue<Queue<Item>> qOfQs = new Queue<>();
+        if (!items.isEmpty()) {
+            for (Item i : items) {
+                Queue<Item> temp = new Queue<>();
+                temp.enqueue(i);
+                qOfQs.enqueue(temp);
+            }
+            return qOfQs;
+        }
         return null;
     }
 
@@ -53,14 +61,51 @@ public class MergeSort {
      */
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
             Queue<Item> q1, Queue<Item> q2) {
-        // Your code here!
-        return null;
+        Queue<Item> mergedQ = new Queue<>();
+        while (!q1.isEmpty() || !q2.isEmpty()) {
+            mergedQ.enqueue(MergeSort.getMin(q1, q2));
+        }
+        return mergedQ;
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
-        // Your code here!
-        return items;
+        Queue<Queue<Item>> qOfQs = makeSingleItemQueues(items);
+        Queue<Queue<Item>> temp = new Queue<>();
+        int index = 0;
+        Queue<Item> q1 = new Queue<>(), q2 = new Queue<>();
+        while (qOfQs.size() > 1) {
+            for (Queue<Item> q : qOfQs) {
+                if (index % 2 == 0) {
+                    q1 = qOfQs.dequeue();
+                } else {
+                    q2 = qOfQs.dequeue();
+                    temp.enqueue(mergeSortedQueues(q1, q2));
+                }
+                index++;
+            }
+            if (index % 2 == 1) {
+                temp.enqueue(mergeSortedQueues(q1, new Queue<>()));
+            }
+            qOfQs = temp;
+        }
+
+        return qOfQs.dequeue();
+    }
+
+    public static void main(String[] args) {
+        Queue<Integer> unsortedInts = new Queue<>();
+        Queue<Character> unsortedInts2 = new Queue<>();
+        for (int i = 0; i < 20; i++) {
+            int temp = (int) (Math.random() * 50);
+            unsortedInts.enqueue(temp);
+            unsortedInts2.enqueue((char) temp);
+        }
+        System.out.println(unsortedInts.toString());
+        System.out.println(unsortedInts2.toString());
+
+        System.out.println(MergeSort.mergeSort(unsortedInts));
+        System.out.println(MergeSort.mergeSort(unsortedInts2));
     }
 }
