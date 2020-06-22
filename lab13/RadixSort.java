@@ -1,3 +1,8 @@
+import edu.princeton.cs.algs4.Queue;
+import org.junit.Test;
+
+
+
 /**
  * Class for doing Radix sort
  *
@@ -16,8 +21,17 @@ public class RadixSort {
      * @return String[] the sorted array
      */
     public static String[] sort(String[] asciis) {
-        // TODO: Implement LSD Sort
-        return null;
+        int maxLength = Integer.MIN_VALUE;
+        String[] sorted = new String[asciis.length];
+        for (int i = 0; i < asciis.length; i++) {
+            maxLength = Math.max(asciis[i].length(), maxLength);
+            sorted[i] = asciis[i];
+        }
+
+        for (int i = maxLength - 1; i >= 0; i--) {
+            sortHelperLSD(sorted, i);
+        }
+        return sorted;
     }
 
     /**
@@ -27,7 +41,29 @@ public class RadixSort {
      * @param index The position to sort the Strings on.
      */
     private static void sortHelperLSD(String[] asciis, int index) {
-        // Optional LSD helper method for required LSD radix sort
+        // Create R = 256 queues to store keys based on the ascii value at index
+        Queue<String>[] queues = new Queue[256];
+        for (int i = 0; i < queues.length; i++) {
+            queues[i] = new Queue<>();
+        }
+        // Enqueue keys to the corresponding queue
+        for (String s : asciis) {
+            int asciiVal;
+            if (index >= s.length()) {
+                 asciiVal = 0;
+            } else {
+                asciiVal = s.charAt(index);
+            }
+            queues[asciiVal].enqueue(s);
+        }
+        // Dequeue keys in order of the queues and store in asciis destructively
+        int k = 0;
+        for (Queue<String> q : queues) {
+            while (!q.isEmpty()) {
+                asciis[k] = q.dequeue();
+                k++;
+            }
+        }
         return;
     }
 
@@ -45,4 +81,11 @@ public class RadixSort {
         // Optional MSD helper method for optional MSD radix sort
         return;
     }
+
+//    public static void main(String[] args) {
+//        String[] acsii1 = {"10", "3", "23", "99", "10002", "592", "1"};
+//        for (String i : RadixSort.sort(acsii1)) {
+//            System.out.println(i);
+//        }
+//    }
 }
