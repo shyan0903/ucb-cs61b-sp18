@@ -1,7 +1,6 @@
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.lang.Double;
 
 /**
  * This class provides a shortestPath method for finding routes between two points
@@ -73,13 +72,13 @@ public class Router {
                 if (!marked.contains(adj)) {
                     double newDis = distTo.get(min) + g.distance(min, adj);
                     if (newDis < distTo.get(adj)) {
-                            distTo.put(adj, newDis);
-                            fringe.add(adj);
-                            edgeTo.put(adj, min);
-                        }
+                        distTo.put(adj, newDis);
+                        fringe.add(adj);
+                        edgeTo.put(adj, min);
                     }
                 }
             }
+        }
         // Back track the shortest path from source to astar
         LinkedList<Long> path = new LinkedList<>();
         for (long backTrack = aStar; backTrack != 0; backTrack = edgeTo.get(backTrack)) {

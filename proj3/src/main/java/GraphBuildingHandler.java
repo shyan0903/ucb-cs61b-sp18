@@ -89,14 +89,14 @@ public class GraphBuildingHandler extends DefaultHandler {
             String k = attributes.getValue("k");
             String v = attributes.getValue("v");
             if (k.equals("maxspeed")) {
-                //System.out.println("Max Speed: " + v);
+                System.out.println("Max Speed: " + v);
             } else if (k.equals("highway")) {
-                //System.out.println("Highway type: " + v);
+                System.out.println("Highway type: " + v);
                 if (GraphBuildingHandler.ALLOWED_HIGHWAY_TYPES.contains(v)) {
                     validWay = true;
                 }
             } else if (k.equals("name")) {
-                //System.out.println("Way Name: " + v);
+                System.out.println("Way Name: " + v);
             }
 //            System.out.println("Tag with k=" + k + ", v=" + v + ".");
         } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")

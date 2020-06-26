@@ -60,9 +60,9 @@ public class Rasterer {
         h = params.get("h");
 
         // Determine if the query can be successfully rendered
-        if (ullon < MapServer.ROOT_ULLON || ullat > MapServer.ROOT_ULLAT ||
-                lrlon > MapServer.ROOT_LRLON || lrlat < MapServer.ROOT_LRLAT ||
-                ullon > lrlon || ullat < lrlat) {
+        if (ullon < MapServer.ROOT_ULLON || ullat > MapServer.ROOT_ULLAT
+                || lrlon > MapServer.ROOT_LRLON || lrlat < MapServer.ROOT_LRLAT
+                || ullon > lrlon || ullat < lrlat) {
             results.put("raster_ul_lon", 0);
             results.put("raster_lr_lon", 0);
             results.put("raster_ul_lat", 0);
@@ -104,8 +104,8 @@ public class Rasterer {
         rendergrid = new String[lry - uly + 1][lrx - ulx + 1];
         for (int i = 0; i < rendergrid.length; i++) {
             for (int j = 0; j < rendergrid[0].length; j++) {
-                rendergrid[i][j] = "d" + bestDepth +
-                        "_x" + (ulx + j) + "_y" + (uly + i) + ".png";
+                rendergrid[i][j] = "d" + bestDepth
+                        + "_x" + (ulx + j) + "_y" + (uly + i) + ".png";
             }
         }
         results.put("render_grid", rendergrid);
