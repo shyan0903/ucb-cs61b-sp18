@@ -1,7 +1,7 @@
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.lang.Double;
 
 /**
  * This class provides a shortestPath method for finding routes between two points
@@ -25,7 +25,67 @@ public class Router {
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        return null; // FIXME
+        // Create variables
+        HashMap<Long, Long> edgeTo = new HashMap<>();
+        HashMap<Long, Double> distTo = new HashMap<>();
+        Set<Long> marked = new HashSet<>();
+        long source = g.closest(stlon, stlat);
+        long aStar = g.closest(destlon, destlat);
+        PriorityQueue<Long> fringe = new PriorityQueue<>(new Comparator<Long>() {
+            @Override
+            public int compare(Long o1, Long o2) {
+                double dis1 = distTo.get(o1) + g.distance(o1, aStar);
+                double dis2 = distTo.get(o2) + g.distance(o2, aStar);
+                if (dis1 > dis2) {
+                    return 1;
+                } else if (dis1 < dis2) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+        boolean found = false;
+
+        // Initialize the distanceTo, heuristics, and marked (1/0)
+        for (Long k : g.vertices()) {
+            distTo.put(k, Double.POSITIVE_INFINITY);
+            edgeTo.put(k, (long) -1);
+        }
+
+        // A* Search
+        distTo.put(source, 0.0);
+        edgeTo.put(source, (long) 0);
+        fringe.add(source);
+        while (!fringe.isEmpty()) {
+            Long min = fringe.poll();
+            marked.add(min);
+            // if target found
+            if (min == aStar) {
+                found = true;
+                break;
+            }
+            if (g.adjacent(min) == null) {
+                continue;
+            }
+            for (Long adj : g.adjacent(min)) {
+                // if unmarked
+                if (!marked.contains(adj)) {
+                    double newDis = distTo.get(min) + g.distance(min, adj);
+                    if (newDis < distTo.get(adj)) {
+                            distTo.put(adj, newDis);
+                            fringe.add(adj);
+                            edgeTo.put(adj, min);
+                        }
+                    }
+                }
+            }
+        // Back track the shortest path from source to astar
+        LinkedList<Long> path = new LinkedList<>();
+        for (long backTrack = aStar; backTrack != 0; backTrack = edgeTo.get(backTrack)) {
+            path.addFirst(backTrack);
+        }
+        return path;
     }
 
     /**

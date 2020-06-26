@@ -39,6 +39,9 @@ public class TestGraphBuildingTiny {
     @Test
     public void testNodeCountTinyGraph() {
         Iterable<Long> ids = graphTiny.vertices();
+        for (Long l : ids) {
+            System.out.println(l);
+        }
         int numberOfNodes = TestGraphBuilding.countIterableItems(ids);
         assertEquals("Your graph should have 7 nodes.", 7, numberOfNodes);
     }

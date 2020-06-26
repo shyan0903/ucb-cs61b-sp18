@@ -8,9 +8,16 @@ import java.util.Map;
  * not draw the output correctly.
  */
 public class Rasterer {
+    private double lrlon, lrlat, ullon, ullat, w, h;
+    private double[] lonDPPbyDepth;
+
 
     public Rasterer() {
-        // YOUR CODE HERE
+        lonDPPbyDepth = new double[8];
+        for (int i = 0; i < 8; i++) {
+            lonDPPbyDepth[i] = lonDPP(MapServer.ROOT_LRLON,
+                    MapServer.ROOT_ULLON, MapServer.TILE_SIZE) / Math.pow(2, i);
+        }
     }
 
     /**
@@ -42,11 +49,75 @@ public class Rasterer {
      *                    forget to set this to true on success! <br>
      */
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
-        // System.out.println(params);
+        // Set up variables
         Map<String, Object> results = new HashMap<>();
-        System.out.println("Since you haven't implemented getMapRaster, nothing is displayed in "
-                           + "your browser.");
+        // store the query variables
+        lrlon = params.get("lrlon");
+        lrlat = params.get("lrlat");
+        ullon = params.get("ullon");
+        ullat = params.get("ullat");
+        w = params.get("w");
+        h = params.get("h");
+
+        // Determine if the query can be successfully rendered
+        if (ullon < MapServer.ROOT_ULLON || ullat > MapServer.ROOT_ULLAT ||
+                lrlon > MapServer.ROOT_LRLON || lrlat < MapServer.ROOT_LRLAT ||
+                ullon > lrlon || ullat < lrlat) {
+            results.put("raster_ul_lon", 0);
+            results.put("raster_lr_lon", 0);
+            results.put("raster_ul_lat", 0);
+            results.put("raster_lr_lat", 0);
+            results.put("render_grid", null);
+            results.put("depth", 0);
+            results.put("query_success", false);
+            return results;
+        }
+
+        // Find the best image depth
+        double queryLonDPP = lonDPP(lrlon, ullon, w);
+        int bestDepth = -1;
+        for (int i = 0; i < lonDPPbyDepth.length; i++) {
+            if (lonDPPbyDepth[i] <= queryLonDPP) {
+                bestDepth = i;
+                break;
+            }
+        }
+        if (bestDepth < 0) {
+            bestDepth = 7;
+        }
+        results.put("depth", bestDepth);
+
+        // Find the files to render given the depth
+        String[][] rendergrid;
+        double lonPerTile = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / Math.pow(2, bestDepth);
+        double latPerTile = (MapServer.ROOT_LRLAT - MapServer.ROOT_ULLAT) / Math.pow(2, bestDepth);
+        int ulx = (int) ((ullon - MapServer.ROOT_ULLON) / lonPerTile);
+        int uly = (int) ((ullat - MapServer.ROOT_ULLAT) / latPerTile);
+        int lrx = (int) ((lrlon - MapServer.ROOT_ULLON) / lonPerTile);
+        int lry = (int) ((lrlat - MapServer.ROOT_ULLAT) / latPerTile);
+
+        results.put("raster_ul_lon", MapServer.ROOT_ULLON + ulx * lonPerTile);
+        results.put("raster_lr_lon", MapServer.ROOT_ULLON + (lrx + 1) * lonPerTile);
+        results.put("raster_ul_lat", MapServer.ROOT_ULLAT + uly * latPerTile);
+        results.put("raster_lr_lat", MapServer.ROOT_ULLAT + (lry + 1) * latPerTile);
+
+        rendergrid = new String[lry - uly + 1][lrx - ulx + 1];
+        for (int i = 0; i < rendergrid.length; i++) {
+            for (int j = 0; j < rendergrid[0].length; j++) {
+                rendergrid[i][j] = "d" + bestDepth +
+                        "_x" + (ulx + j) + "_y" + (uly + i) + ".png";
+            }
+        }
+        results.put("render_grid", rendergrid);
+        results.put("query_success", true);
+
+
         return results;
     }
+
+    private double lonDPP(double lrlon, double ullon, double width) {
+        return (lrlon - ullon) / width;
+    }
+
 
 }
