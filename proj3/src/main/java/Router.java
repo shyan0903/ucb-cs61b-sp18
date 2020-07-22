@@ -1,7 +1,6 @@
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 /**
  * This class provides a shortestPath method for finding routes between two points
  * on the map. Start by using Dijkstra's, and if your code isn't fast enough for your
@@ -24,66 +23,55 @@ public class Router {
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        // Create variables
-        HashMap<Long, Long> edgeTo = new HashMap<>();
+        long start = g.closest(stlon, stlat);
+        long astar = g.closest(destlon, destlat);
         HashMap<Long, Double> distTo = new HashMap<>();
-        Set<Long> marked = new HashSet<>();
-        long source = g.closest(stlon, stlat);
-        long aStar = g.closest(destlon, destlat);
+        HashMap<Long, Long> edgeTo = new HashMap<>();
+        HashSet<Long> marked = new HashSet<>();
+
         PriorityQueue<Long> fringe = new PriorityQueue<>(new Comparator<Long>() {
             @Override
             public int compare(Long o1, Long o2) {
-                double dis1 = distTo.get(o1) + g.distance(o1, aStar);
-                double dis2 = distTo.get(o2) + g.distance(o2, aStar);
-                if (dis1 > dis2) {
+                double d1 = distTo.get(o1) + g.distance(o1, astar);
+                double d2 = distTo.get(o2) + g.distance(o2, astar);
+                if (d1 > d2) {
                     return 1;
-                } else if (dis1 < dis2) {
-                    return -1;
-                } else {
+                } else if (d1 == d2) {
                     return 0;
+                } else {
+                    return -1;
                 }
             }
         });
-        boolean found = false;
 
-        // Initialize the distanceTo, heuristics, and marked (1/0)
-        for (Long k : g.vertices()) {
-            distTo.put(k, Double.POSITIVE_INFINITY);
-            edgeTo.put(k, (long) -1);
+        for (Long v : g.vertices()) {
+            distTo.put(v, Double.POSITIVE_INFINITY);
         }
-
-        // A* Search
-        distTo.put(source, 0.0);
-        edgeTo.put(source, (long) 0);
-        fringe.add(source);
+        distTo.put(start, 0.0);
+        fringe.add(start);
         while (!fringe.isEmpty()) {
-            Long min = fringe.poll();
-            marked.add(min);
-            // if target found
-            if (min == aStar) {
-                found = true;
+            Long cur = fringe.poll();
+            if (cur.equals(astar)) {
                 break;
             }
-            if (g.adjacent(min) == null) {
-                continue;
-            }
-            for (Long adj : g.adjacent(min)) {
-                // if unmarked
-                if (!marked.contains(adj)) {
-                    double newDis = distTo.get(min) + g.distance(min, adj);
-                    if (newDis < distTo.get(adj)) {
-                        distTo.put(adj, newDis);
-                        fringe.add(adj);
-                        edgeTo.put(adj, min);
+            if (!marked.contains(cur)) {
+                marked.add(cur);
+                for (long neighbor : g.adjacent(cur)) {
+                    Double newDis = distTo.get(cur) + g.distance(cur, neighbor);
+                    if (newDis.compareTo(distTo.get(neighbor)) < 0) {
+                        distTo.put(neighbor, newDis);
+                        fringe.add(neighbor);
+                        edgeTo.put(neighbor, cur);
                     }
                 }
             }
         }
-        // Back track the shortest path from source to astar
+
         LinkedList<Long> path = new LinkedList<>();
-        for (long backTrack = aStar; backTrack != 0; backTrack = edgeTo.get(backTrack)) {
-            path.addFirst(backTrack);
+        for (long last = astar; last != start; last = edgeTo.get(last)) {
+            path.addFirst(last);
         }
+        path.addFirst(start);
         return path;
     }
 
@@ -96,9 +84,51 @@ public class Router {
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
-        return null; // FIXME
+        List<NavigationDirection> directionList = new LinkedList<>();
+        int preDir = 0, curDir;
+        double preDis = 0.0;
+        String preWay = g.vertexList.get(route.get(0)).getWay(), curWay = "";
+        NavigationDirection first = new NavigationDirection();
+        first.distance = g.distance(route.get(0), route.get(route.size() - 1));
+        first.way = preWay;
+        first.direction = preDir;
+        directionList.add(first);
+        for (int i = 1; i < route.size(); i++) {
+            long start = route.get(i - 1), end = route.get(i);
+            curDir = getDirection(g.bearing(start, end));
+            curWay = g.vertexList.get(route.get(i)).getWay();
+            // if there is a change of way
+            if (curDir != preDir) {
+                NavigationDirection instance = new NavigationDirection();
+                instance.way = curWay;
+                instance.distance = g.distance(start, end);
+                instance.direction = curDir;
+                System.out.println(g.bearing(start, end) + curDir + ", " + curWay);
+                directionList.add(instance);
+            }
+            preDir = curDir;
+            preWay = curWay;
+        }
+        return directionList;
     }
 
+    private static int getDirection(double bearing) {
+        if (-15 <= bearing && bearing <= 15) {
+            return 1;
+        } else if (-30 <= bearing) {
+            return 2;
+        } else if (bearing <= 30) {
+            return 3;
+        } else if (-100 <= bearing) {
+            return 5;
+        } else if (bearing <= 100) {
+            return 4;
+        } else if (100 < bearing) {
+            return 7;
+        } else {
+            return 6;
+        }
+    }
 
     /**
      * Class to represent a navigation direction, which consists of 3 attributes:

@@ -38,6 +38,7 @@ public class GraphBuildingHandler extends DefaultHandler {
     private final GraphDB g;
     private List<Long> ndAlongWay;
     private boolean validWay;
+    private String wayName;
 
     /**
      * Create a new GraphBuildingHandler.
@@ -89,20 +90,22 @@ public class GraphBuildingHandler extends DefaultHandler {
             String k = attributes.getValue("k");
             String v = attributes.getValue("v");
             if (k.equals("maxspeed")) {
-                System.out.println("Max Speed: " + v);
+                //System.out.println("Max Speed: " + v);
             } else if (k.equals("highway")) {
-                System.out.println("Highway type: " + v);
+                //System.out.println("Highway type: " + v);
                 if (GraphBuildingHandler.ALLOWED_HIGHWAY_TYPES.contains(v)) {
                     validWay = true;
                 }
             } else if (k.equals("name")) {
-                System.out.println("Way Name: " + v);
+                //System.out.println("Way Name: " + v);
+                wayName = v;
             }
 //            System.out.println("Tag with k=" + k + ", v=" + v + ".");
         } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")
                 .equals("name")) {
             /* While looking at a node, we found a <tag...> with k="name". */
             /* TODO Create a location. */
+
             /* Hint: Since we found this <tag...> INSIDE a node, we should probably remember which
             node this tag belongs to. Remember XML is parsed top-to-bottom, so probably it's the
             last node that you looked at (check the first if-case). */
@@ -131,6 +134,7 @@ public class GraphBuildingHandler extends DefaultHandler {
             if (validWay) {
                 for (int i = 0; i < ndAlongWay.size() - 1; i++) {
                     g.addEdge(ndAlongWay.get(i), ndAlongWay.get(i + 1));
+                    g.vertexList.get(ndAlongWay.get(i)).setWay(wayName);
                 }
             }
             ndAlongWay.clear();

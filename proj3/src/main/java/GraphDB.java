@@ -18,11 +18,42 @@ import java.util.*;
  * @author Alan Yao, Josh Hug
  */
 public class GraphDB {
-    /** Your instance variables for storing the graph. You should consider
-     * creating helper classes, e.g. Node, Edge, etc. */
-    HashMap<Long, Set<Long>> graphList = new HashMap<>();
-    // In the list, items are stored in the following order: lon, lat
-    HashMap<Long, List<Double>> vertexList = new HashMap<>();
+    /** Instance variables for storing the graph.
+     */
+    /* Class for storing a vertex in the graph. */
+    protected class Vertex {
+        double lon, lat;
+        Set<Long> neighbors;
+        String way;
+
+        Vertex(double lon, double lat) {
+            this.lon = lon;
+            this.lat = lat;
+            neighbors = new HashSet<>();
+        }
+
+        void setWay(String way) {
+            this.way = way;
+        }
+
+        String getWay() {
+            return way;
+        }
+    }
+    /* Class for storing a location, a vertex with a name.*/
+    private class Location {
+        double lon, lat;
+        String name;
+        Location(double lon, double lat, String name) {
+            this.lon = lon;
+            this.lat = lat;
+            this.name = name;
+        }
+    }
+
+    HashMap<Long, Vertex> vertexList = new HashMap<>();
+
+
     /**
      * Example constructor shows how to create and start an XML parser.
      * You do not need to modify this constructor, but you're welcome to do so.
@@ -59,12 +90,7 @@ public class GraphDB {
      *  we can reasonably assume this since typically roads are connected.
      */
     private void clean() {
-        for (Iterator<Long> iter = graphList.keySet().iterator(); iter.hasNext();) {
-            Long nd = iter.next();
-            if (graphList.get(nd).size() == 0) {
-                iter.remove();
-            }
-        }
+        vertexList.keySet().removeIf(nd -> vertexList.get(nd).neighbors.size() == 0);
     }
 
     /**
@@ -72,7 +98,7 @@ public class GraphDB {
      * @return An iterable of id's of all vertices in the graph.
      */
     Iterable<Long> vertices() {
-        return graphList.keySet();
+        return vertexList.keySet();
     }
 
     /**
@@ -81,7 +107,7 @@ public class GraphDB {
      * @return An iterable of the ids of the neighbors of v.
      */
     Iterable<Long> adjacent(long v) {
-        return graphList.get(v);
+        return vertexList.get(v).neighbors;
     }
 
     /**
@@ -153,7 +179,6 @@ public class GraphDB {
                 closestID = id;
             }
         }
-        graphList.remove(-1L);
         vertexList.remove(-1L);
         return closestID;
     }
@@ -164,7 +189,7 @@ public class GraphDB {
      * @return The longitude of the vertex.
      */
     double lon(long v) {
-        return vertexList.get(v).get(0);
+        return vertexList.get(v).lon;
     }
 
     /**
@@ -173,19 +198,27 @@ public class GraphDB {
      * @return The latitude of the vertex.
      */
     double lat(long v) {
-        return vertexList.get(v).get(1);
+        return vertexList.get(v).lat;
     }
 
-    void addV(long v, double lon, double lat) {
-        ArrayList<Double> temp = new ArrayList<>();
-        temp.add(lon);
-        temp.add(lat);
-        vertexList.put(v, temp);
-        graphList.put(v, new HashSet<>());
+    /**
+     * Adds vertex to the graph.
+     * @param id The id of the vertex
+     * @param lon Longitude of the vertex
+     * @param lat Latitude of the vertex
+     */
+    public void addV(long id, double lon, double lat) {
+        Vertex v = new Vertex(lon, lat);
+        vertexList.put(id, v);
     }
 
-    void addEdge(long fromID, long toID) {
-        graphList.get(fromID).add(toID);
-        graphList.get(toID).add(fromID);
+    /**
+     * Adds edge from-to to this graph.
+     * @param from one vertex in the edge
+     * @param to another vertex in the edge
+     */
+    public void addEdge(long from, long to) {
+        vertexList.get(from).neighbors.add(to);
+        vertexList.get(to).neighbors.add(from);
     }
 }
