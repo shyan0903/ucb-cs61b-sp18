@@ -46,7 +46,7 @@ public class Router {
 
         for (Long v : g.vertices()) {
             distTo.put(v, Double.POSITIVE_INFINITY);
-            //edgeTo.put(v, (long) -110);
+            edgeTo.put(v, (long) -110);
         }
         distTo.put(start, 0.0);
         edgeTo.put(start, (long) 0);
@@ -69,6 +69,7 @@ public class Router {
             }
         }
 
+        /* Back track the distTo hashmap to find the path */
         LinkedList<Long> path = new LinkedList<>();
         for (long last = astar; last != (long) 0; last = edgeTo.get(last)) {
             path.addFirst(last);
