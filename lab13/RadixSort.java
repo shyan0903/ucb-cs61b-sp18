@@ -1,6 +1,8 @@
 import edu.princeton.cs.algs4.Queue;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -21,13 +23,12 @@ public class RadixSort {
      * @return String[] the sorted array
      */
     public static String[] sort(String[] asciis) {
-        int maxLength = Integer.MIN_VALUE;
+        int maxLength = 0;
         String[] sorted = new String[asciis.length];
         for (int i = 0; i < asciis.length; i++) {
             maxLength = Math.max(asciis[i].length(), maxLength);
             sorted[i] = asciis[i];
         }
-
         for (int i = maxLength - 1; i >= 0; i--) {
             sortHelperLSD(sorted, i);
         }
@@ -41,30 +42,37 @@ public class RadixSort {
      * @param index The position to sort the Strings on.
      */
     private static void sortHelperLSD(String[] asciis, int index) {
-        // Create R = 256 queues to store keys based on the ascii value at index
-        Queue<String>[] queues = new Queue[256];
-        for (int i = 0; i < queues.length; i++) {
-            queues[i] = new Queue<>();
-        }
-        // Enqueue keys to the corresponding queue
+        /* Count the frequency of each ascii. */
+        int[] counts = new int[256];
         for (String s : asciis) {
-            int asciiVal;
             if (index >= s.length()) {
-                 asciiVal = 0;
+                counts[(int) '_'] ++;
             } else {
-                asciiVal = s.charAt(index);
-            }
-            queues[asciiVal].enqueue(s);
-        }
-        // Dequeue keys in order of the queues and store in asciis destructively
-        int k = 0;
-        for (Queue<String> q : queues) {
-            while (!q.isEmpty()) {
-                asciis[k] = q.dequeue();
-                k++;
+                counts[(int) s.charAt(index)] ++;
             }
         }
-        return;
+        /* Fill the start array. */
+        int[] start = new int[256];
+        int position = 0;
+        for (int i = 0; i < counts.length; i++) {
+            start[i] = position;
+            position += counts[i];
+        }
+        /* Copy the Strings to their sorted location. */
+        String[] toReturn = new String[asciis.length];
+        for (int i = 0; i < toReturn.length; i++) {
+            String temp = asciis[i];
+            if (index >= temp.length()) {
+                toReturn[start[(int) '_']] = temp;
+                start[(int) '_']++;
+            } else {
+                toReturn[start[(int) temp.charAt(index)]] = temp;
+                start[(int) temp.charAt(index)]++;
+            }
+        }
+        for (int i = 0; i < toReturn.length; i++) {
+            asciis[i] = toReturn[i];
+        }
     }
 
     /**
@@ -82,10 +90,11 @@ public class RadixSort {
         return;
     }
 
-//    public static void main(String[] args) {
-//        String[] acsii1 = {"10", "3", "23", "99", "10002", "592", "1"};
-//        for (String i : RadixSort.sort(acsii1)) {
-//            System.out.println(i);
-//        }
-//    }
+    public static void main(String[] args) {
+        String[] acsii1 = {"abc", "hot", "row", "apple", "amex", "zedd", "2r3f"};
+        for (String i : RadixSort.sort(acsii1)) {
+            System.out.println(i);
+        }
+        //System.out.println((int) 'A');
+    }
 }
