@@ -46,8 +46,10 @@ public class Router {
 
         for (Long v : g.vertices()) {
             distTo.put(v, Double.POSITIVE_INFINITY);
+            //edgeTo.put(v, (long) -110);
         }
         distTo.put(start, 0.0);
+        edgeTo.put(start, (long) 0);
         fringe.add(start);
         while (!fringe.isEmpty()) {
             Long cur = fringe.poll();
@@ -68,10 +70,9 @@ public class Router {
         }
 
         LinkedList<Long> path = new LinkedList<>();
-        for (long last = astar; last != start; last = edgeTo.get(last)) {
+        for (long last = astar; last != (long) 0; last = edgeTo.get(last)) {
             path.addFirst(last);
         }
-        path.addFirst(start);
         return path;
     }
 
@@ -80,7 +81,7 @@ public class Router {
      * @param g The graph to use.
      * @param route The route to translate into directions. Each element
      *              corresponds to a node from the graph in the route.
-     * @return A list of NavigatiionDirection objects corresponding to the input
+     * @return A list of NavigationDirection objects corresponding to the input
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
