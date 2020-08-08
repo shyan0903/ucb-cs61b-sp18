@@ -43,28 +43,40 @@ public class RadixSort {
      */
     private static void sortHelperLSD(String[] asciis, int index) {
         /* Count the frequency of each ascii. */
-        int[] counts = new int[256];
+        Queue<String>[] elementsQueue = new Queue[256];
         for (String s : asciis) {
+            int bucket;
             if (index >= s.length()) {
-                counts[(int) '_'] ++;
+                 bucket = '_';
             } else {
-                counts[(int) s.charAt(index)] ++;
+                bucket = s.charAt(index);
+            }
+            if (elementsQueue[bucket] == null) {
+                elementsQueue[bucket] = new Queue<>();
+            }
+            elementsQueue[bucket].enqueue(s);
+        }
+        int i = 0;
+        for (Queue<String> q : elementsQueue) {
+            while (q != null && !q.isEmpty()) {
+                asciis[i] = q.dequeue();
+                i ++;
             }
         }
-        /* Fill the start array. */
+        /* Fill the start array. *//*
         int[] start = new int[256];
         int position = 0;
         for (int i = 0; i < counts.length; i++) {
             start[i] = position;
             position += counts[i];
         }
-        /* Copy the Strings to their sorted location. */
+        *//* Copy the Strings to their sorted location. *//*
         String[] toReturn = new String[asciis.length];
         for (int i = 0; i < toReturn.length; i++) {
             String temp = asciis[i];
             if (index >= temp.length()) {
                 toReturn[start[(int) '_']] = temp;
-                start[(int) '_']++;
+                start[(int) '_'] ++;
             } else {
                 toReturn[start[(int) temp.charAt(index)]] = temp;
                 start[(int) temp.charAt(index)]++;
@@ -72,7 +84,9 @@ public class RadixSort {
         }
         for (int i = 0; i < toReturn.length; i++) {
             asciis[i] = toReturn[i];
-        }
+        } */
+
+
     }
 
     /**
