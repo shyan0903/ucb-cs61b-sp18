@@ -7,7 +7,7 @@ import org.junit.runners.MethodSorters;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestBinaryTrie {
-/* Uncomment when you are ready. 
+
     @Test
     public void bestPrefixMatchWithExactMatches() {
         System.out.println("Testing that bestPrefixMatch works with exact matches.");
@@ -53,15 +53,15 @@ public class TestBinaryTrie {
         BitSequence justE = new BitSequence("11");
         assertEquals(justE, m.getSequence());
 
-        BitSequence shouldBeAE = new BitSequence("00011");
-        m = trie.longestPrefixMatch(shouldBeA);
-        assertEquals((char) 'a', (char) m.getSymbol()); 
-        assertEquals(justA, m.getSequence());
+        BitSequence shouldBeAE = new BitSequence("00110");
+        m = trie.longestPrefixMatch(shouldBeAE);
+        assertEquals((char) 'b', (char) m.getSymbol());
+        assertEquals(new BitSequence("001"), m.getSequence());
         
         BitSequence remainingBits = shouldBeAE.allButFirstNBits(m.getSequence().length());
         m = trie.longestPrefixMatch(remainingBits);
-        assertEquals((char) 'e', (char) m.getSymbol());
-        assertEquals(justE, m.getSequence());
+        assertEquals((char) 'd', (char) m.getSymbol());
+        assertEquals(new BitSequence("10"), m.getSequence());
     }
 
     @Test
@@ -88,5 +88,5 @@ public class TestBinaryTrie {
     public static void main(String[] args) {
         jh61b.junit.textui.runClasses(TestBinaryTrie.class);
     }    
-    */
+
 } 
