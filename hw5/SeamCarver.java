@@ -1,15 +1,10 @@
 import edu.princeton.cs.algs4.Picture;
-import edu.princeton.cs.algs4.StdOut;
-
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
- * Use dynamic programming to find horizontal or vertical seams with the minimum total energy
- * and remove them from a picture to resize it.
+ * This class presents a content-aware resizing technique. It uses
+ * dynamic programming to find horizontal or vertical seams with
+ * the minimum total energy and remove them from a picture to resize it.
  * */
 public class SeamCarver {
     private Picture picture;
@@ -67,18 +62,33 @@ public class SeamCarver {
         return rx + gx + bx + ry + gy + by;
     }
 
-    public static void main(String[] args) {
-        Picture picture = new Picture("images/6x5.png");
-        SeamCarver sc = new SeamCarver(picture);
-        for (int i :
-                sc.findHorizontalSeam()) {
-            System.out.println(i);
+    /** Destructively transpose the energyDB width to adapt the horizontal and
+     * vertical carvings. NOTE: width and height are changed after transposing.
+     * */
+    private double[][] transpose() {
+        double[][] transposed = new double[height][width];
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                transposed[row][col] = energyDB[col][row];
+            }
         }
-        for (int i :
-                sc.findVerticalSeam()){
-            System.out.println(i);
-        }
+        width = transposed.length;
+        height = transposed[0].length;
+        return transposed;
     }
+
+//    public static void main(String[] args) {
+//        Picture picture = new Picture("images/6x5.png");
+//        SeamCarver sc = new SeamCarver(picture);
+////        for (int i :
+////                sc.findHorizontalSeam()) {
+////            System.out.println(i);
+////        }
+//        for (int i :
+//                sc.findVerticalSeam()){
+//            System.out.println(i);
+//        }
+//    }
 
     /**
      * Helper functions to compute updated rows and columns, include corner cases.
@@ -87,7 +97,6 @@ public class SeamCarver {
      * @return an int
      * */
     private int updateRow(int cur, char dir) {
-        //System.out.println(Math.floorMod((cur - 1), width()));
         return dir == '+' ? Math.floorMod((cur + 1), height)
                 : Math.floorMod((cur - 1), height);
     }
@@ -98,7 +107,7 @@ public class SeamCarver {
 
     /** Find the sequence of indices for horizontal seam to be removed. */
     public int[] findHorizontalSeam() {
-        calcM(0);
+        calcM();
         int[] seam = new int[width];
         double[] temp = new double[height];
         for (int i = 0; i < height; i++) {
@@ -116,20 +125,9 @@ public class SeamCarver {
     }
     /** Find the sequence of indices for vertical seam to be removed. */
     public int[] findVerticalSeam() {
-        calcM(1);
-        int[] seam = new int[height];
-        double[] temp = new double[width];
-        for (int i = 0; i < width; i++) {
-            temp[i] = i;
-        }
-        double[][] para = new double[2][];
-        para[0] = energyM[height - 1];
-        para[1] = temp;
-        int last = (int) minEnergy(para)[1];
-        for (int i = height - 1; i >= 0; i--) {
-            seam[i] = last;
-            last = pathFrom[i][last];
-        }
+        energyDB = transpose();
+        int[] seam = findHorizontalSeam();
+        energyDB = transpose();
         return seam;
     }
 
@@ -139,62 +137,35 @@ public class SeamCarver {
      * e(col, row) = energy cost of pixel at location (col, row)
      * Then M(i,j) = e(i,j) + min(M(i−1,j−1),M(i,j−1),M(i+1,j−1))
      * */
-    private void calcM(int dir) {
-        /* Horizontal orientation. */
-        if (dir == 0) {
-            energyM = new double[width][height];
-            pathFrom = new int[width][height];
-            /* Initialize the values for the first column. */
-            for (int i = 0; i < height; i++) {
-                energyM[0][i] = energyDB[0][i];
-                pathFrom[0][i] = -1;
-            }
-            /* For the other columns, use the expression above. */
-            for (int i = 1; i < width; i++) {
-                for (int j = 0; j < height; j++) {
-                    double[] temp = minEnergy(touchingPixelsEnergy(i, j, dir));
-                    energyM[i][j] = energyDB[i][j] + temp[0];
-                    pathFrom[i][j] = (int) temp[1];
-                }
-            }
-        } else {
-            /* Vertical orientation. */
-            energyM = new double[height][width];
-            pathFrom = new int[height][width];
-            for (int i = 0; i < width; i++) {
-                energyM[0][i] = energyDB[i][0];
-                pathFrom[0][i] = -1;
-            }
-            for (int i = 1; i < height; i++) {
-                for (int j = 0; j < width; j++) {
-                    double[] temp = minEnergy(touchingPixelsEnergy(j, i, dir));
-                    energyM[i][j] = energyDB[j][i] + temp[0];
-                    pathFrom[i][j] = (int)temp[1];
-                }
+    private void calcM() {
+        energyM = new double[width][height];
+        pathFrom = new int[width][height];
+        /* Initialize the values for the first column/row depending on the orientation. */
+        for (int i = 0; i < height; i++) {
+            energyM[0][i] = energyDB[0][i];
+            pathFrom[0][i] = -1;
+        }
+        /* For the other columns/rows, use the expression above. */
+        for (int i = 1; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                double[] temp = minEnergy(touchingPixelsEnergy(i, j));
+                energyM[i][j] = energyDB[i][j] + temp[0];
+                pathFrom[i][j] = (int) temp[1];
             }
         }
     }
 
-    private double[][] touchingPixelsEnergy(int c, int r, int dir) {
-        if (dir == 0) {
-            if (r != 0 && r != height - 1) {
-                return new double[][]{{energyM[c - 1][r - 1], energyM[c - 1][r], energyM[c - 1][r + 1]},
-                        {r-1,r,r+1}};
-            } else if (r == 0) {
-                return new double[][]{{energyM[c - 1][r], energyM[c - 1][r + 1]},{r,r+1}};
-            } else {
-                return new double[][]{{energyM[c - 1][r - 1], energyM[c - 1][r]}, {r-1,r}};
-            }
+    private double[][] touchingPixelsEnergy(int c, int r) {
+        int edge = height - 1;
+        if (r != 0 && r != edge) {
+            return new double[][]{{energyM[c - 1][r - 1], energyM[c - 1][r], energyM[c - 1][r + 1]},
+                    {r - 1, r, r + 1}};
+        } else if (r == 0) {
+            return new double[][]{{energyM[c - 1][r], energyM[c - 1][r + 1]},
+                    {r, r + 1}};
         } else {
-            if (c != 0 && c != width - 1) {
-                return new double[][]
-                        {{energyM[r - 1][c - 1], energyM[r - 1][c], energyM[r - 1][c + 1]},
-                                {c - 1, c, c + 1}};
-            } else if (c == 0) {
-                return new double[][]{{energyM[r - 1][c], energyM[r - 1][c + 1]}, {c, c + 1}};
-            } else {
-                return new double[][]{{energyM[r - 1][c - 1], energyM[r - 1][c]}, {c - 1, c}};
-            }
+            return new double[][]{{energyM[c - 1][r - 1], energyM[c - 1][r]},
+                    {r - 1, r}};
         }
     }
 
@@ -209,6 +180,23 @@ public class SeamCarver {
             }
         }
         return new double[]{minEnergy, values[1][minIndex]};
+    }
+
+    private int[] findSeam() {
+        int[] seam = new int[height];
+        double[] temp = new double[width];
+        for (int i = 0; i < width; i++) {
+            temp[i] = i;
+        }
+        double[][] para = new double[2][];
+        para[0] = energyM[height - 1];
+        para[1] = temp;
+        int last = (int) minEnergy(para)[1];
+        for (int i = height - 1; i >= 0; i--) {
+            seam[i] = last;
+            last = pathFrom[i][last];
+        }
+        return seam;
     }
 
     /** Remove horizontal seam from picture. */
