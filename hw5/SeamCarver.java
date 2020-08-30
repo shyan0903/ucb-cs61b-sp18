@@ -10,7 +10,6 @@ public class SeamCarver {
     private Picture picture;
     private double[][] energyDB;
     private int width, height;
-    private final int HORIZONTAL = 0, VERTICAL = 1;
     private double[][] energyM;
     private int[][] pathFrom;
 
@@ -22,7 +21,7 @@ public class SeamCarver {
         energyDB = new double[width][height];
         for (int col = 0; col < width; col++) {
             for (int row = 0; row < height; row++) {
-                energyDB[col][row] = energyPrivate(col, row);
+                energyDB[col][row] = calcEnergy(col, row);
             }
         }
     }
@@ -49,7 +48,7 @@ public class SeamCarver {
 
     /** Calculates the energy of a pixel at column x and row y
      * and stores the values in a 2D array for faster retrievals. */
-    private double energyPrivate(int x, int y) {
+    private double calcEnergy(int x, int y) {
         double rx, gx, bx, ry, gy, by;
         Color left = picture.get(updateCol(x, '-'), y), right = picture.get(updateCol(x, '+'), y);
         Color up = picture.get(x, updateRow(y, '-')), down = picture.get(x, updateRow(y, '+'));
@@ -77,18 +76,19 @@ public class SeamCarver {
         return transposed;
     }
 
-//    public static void main(String[] args) {
-//        Picture picture = new Picture("images/6x5.png");
-//        SeamCarver sc = new SeamCarver(picture);
-////        for (int i :
-////                sc.findHorizontalSeam()) {
-////            System.out.println(i);
-////        }
-//        for (int i :
-//                sc.findVerticalSeam()){
-//            System.out.println(i);
-//        }
-//    }
+    public static void main(String[] args) {
+        Picture picture = new Picture("images/5x6.png");
+        SeamCarver sc = new SeamCarver(picture);
+        for (int i :
+                sc.findHorizontalSeam()) {
+            System.out.print(i);
+        }
+        System.out.println("");
+        for (int i :
+                sc.findVerticalSeam()) {
+            System.out.print(i);
+        }
+    }
 
     /**
      * Helper functions to compute updated rows and columns, include corner cases.
@@ -108,20 +108,7 @@ public class SeamCarver {
     /** Find the sequence of indices for horizontal seam to be removed. */
     public int[] findHorizontalSeam() {
         calcM();
-        int[] seam = new int[width];
-        double[] temp = new double[height];
-        for (int i = 0; i < height; i++) {
-            temp[i] = i;
-        }
-        double[][] para = new double[2][];
-        para[0] = energyM[width - 1];
-        para[1] = temp;
-        int last = (int) minEnergy(para)[1];
-        for (int i = width - 1; i >= 0; i--) {
-            seam[i] = last;
-            last = pathFrom[i][last];
-        }
-        return seam;
+        return findSeam();
     }
     /** Find the sequence of indices for vertical seam to be removed. */
     public int[] findVerticalSeam() {
@@ -158,13 +145,16 @@ public class SeamCarver {
     private double[][] touchingPixelsEnergy(int c, int r) {
         int edge = height - 1;
         if (r != 0 && r != edge) {
-            return new double[][]{{energyM[c - 1][r - 1], energyM[c - 1][r], energyM[c - 1][r + 1]},
+            return new double[][]{
+                    {energyM[c - 1][r - 1], energyM[c - 1][r], energyM[c - 1][r + 1]},
                     {r - 1, r, r + 1}};
         } else if (r == 0) {
-            return new double[][]{{energyM[c - 1][r], energyM[c - 1][r + 1]},
+            return new double[][]{
+                    {energyM[c - 1][r], energyM[c - 1][r + 1]},
                     {r, r + 1}};
         } else {
-            return new double[][]{{energyM[c - 1][r - 1], energyM[c - 1][r]},
+            return new double[][]{
+                    {energyM[c - 1][r - 1], energyM[c - 1][r]},
                     {r - 1, r}};
         }
     }
@@ -183,16 +173,17 @@ public class SeamCarver {
     }
 
     private int[] findSeam() {
-        int[] seam = new int[height];
-        double[] temp = new double[width];
-        for (int i = 0; i < width; i++) {
+        int[] seam = new int[width];
+        /* Create a temporary array to pass in as input for minEnergy() function. */
+        double[] temp = new double[height];
+        for (int i = 0; i < height; i++) {
             temp[i] = i;
         }
         double[][] para = new double[2][];
-        para[0] = energyM[height - 1];
+        para[0] = energyM[width - 1];
         para[1] = temp;
         int last = (int) minEnergy(para)[1];
-        for (int i = height - 1; i >= 0; i--) {
+        for (int i = width - 1; i >= 0; i--) {
             seam[i] = last;
             last = pathFrom[i][last];
         }
