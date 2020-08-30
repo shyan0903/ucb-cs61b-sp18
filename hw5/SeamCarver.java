@@ -26,9 +26,9 @@ public class SeamCarver {
         }
     }
 
-    /** Return the current picture. */
+    /** Return a copy of the input picture to avoid changes. */
     public Picture picture() {
-        return this.picture;
+        return new Picture(picture);
     }
 
     /** Get the width of the picture. */
@@ -77,7 +77,7 @@ public class SeamCarver {
     }
 
     public static void main(String[] args) {
-        Picture picture = new Picture("images/5x6.png");
+        Picture picture = new Picture("images/diagonals.png");
         SeamCarver sc = new SeamCarver(picture);
         for (int i :
                 sc.findHorizontalSeam()) {
@@ -143,19 +143,24 @@ public class SeamCarver {
     }
 
     private double[][] touchingPixelsEnergy(int c, int r) {
-        int edge = height - 1;
-        if (r != 0 && r != edge) {
-            return new double[][]{
-                    {energyM[c - 1][r - 1], energyM[c - 1][r], energyM[c - 1][r + 1]},
-                    {r - 1, r, r + 1}};
+        int topRow = r - 1, midRow = r, btmRow = r + 1;
+        double top, mid = energyM[c - 1][midRow], btm;
+        if (height == 1) {
+            return new double[][]{{mid},{midRow}};
+        }
+        if (height == 2) {
+            if (r == 0) {
+                return new double[][]{{mid, energyM[c - 1][btmRow]}, {midRow, btmRow}};
+            } else {
+                return new double[][]{{energyM[c - 1][topRow], mid}, {topRow, midRow}};
+            }
+        }
+        if (r != 0 && r != height - 1) {
+            return new double[][]{{energyM[c - 1][topRow], mid, energyM[c - 1][btmRow]}, {topRow, midRow, btmRow}};
         } else if (r == 0) {
-            return new double[][]{
-                    {energyM[c - 1][r], energyM[c - 1][r + 1]},
-                    {r, r + 1}};
+            return new double[][]{{mid, energyM[c - 1][btmRow]}, {midRow, btmRow}};
         } else {
-            return new double[][]{
-                    {energyM[c - 1][r - 1], energyM[c - 1][r]},
-                    {r - 1, r}};
+            return new double[][]{{energyM[c - 1][topRow], mid}, {topRow, midRow}};
         }
     }
 
