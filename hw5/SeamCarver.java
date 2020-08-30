@@ -110,6 +110,7 @@ public class SeamCarver {
         calcM();
         return findSeam();
     }
+
     /** Find the sequence of indices for vertical seam to be removed. */
     public int[] findVerticalSeam() {
         energyDB = transpose();
@@ -126,27 +127,25 @@ public class SeamCarver {
      * */
     private void calcM() {
         energyM = new double[width][height];
-        pathFrom = new int[width][height];
         /* Initialize the values for the first column/row depending on the orientation. */
         for (int i = 0; i < height; i++) {
             energyM[0][i] = energyDB[0][i];
-            pathFrom[0][i] = -1;
         }
         /* For the other columns/rows, use the expression above. */
         for (int i = 1; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                double[] temp = minEnergy(touchingPixelsEnergy(i, j));
-                energyM[i][j] = energyDB[i][j] + temp[0];
-                pathFrom[i][j] = (int) temp[1];
+                double[][] neighbors = touchingPixelsEnergy(i, j);
+                int minIndex = minEnergy(neighbors[0]);
+                energyM[i][j] = energyDB[i][j] + neighbors[0][minIndex];
             }
         }
     }
 
     private double[][] touchingPixelsEnergy(int c, int r) {
         int topRow = r - 1, midRow = r, btmRow = r + 1;
-        double top, mid = energyM[c - 1][midRow], btm;
+        double mid = energyM[c - 1][midRow];
         if (height == 1) {
-            return new double[][]{{mid},{midRow}};
+            return new double[][]{{mid}, {midRow}};
         }
         if (height == 2) {
             if (r == 0) {
@@ -156,7 +155,9 @@ public class SeamCarver {
             }
         }
         if (r != 0 && r != height - 1) {
-            return new double[][]{{energyM[c - 1][topRow], mid, energyM[c - 1][btmRow]}, {topRow, midRow, btmRow}};
+            return new double[][]{
+                    {energyM[c - 1][topRow], mid, energyM[c - 1][btmRow]},
+                    {topRow, midRow, btmRow}};
         } else if (r == 0) {
             return new double[][]{{mid, energyM[c - 1][btmRow]}, {midRow, btmRow}};
         } else {
@@ -164,34 +165,28 @@ public class SeamCarver {
         }
     }
 
-    /** Return the minimum energy among values. */
-    private double[] minEnergy(double[][] values) {
+    /** Return the index of the minimum energy among values. */
+    private int minEnergy(double[] values) {
         double minEnergy = Double.MAX_VALUE;
         int minIndex = -1;
-        for (int i = 0; i < values[0].length; i++) {
-            if (values[0][i] < minEnergy) {
-                minEnergy = values[0][i];
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] < minEnergy) {
+                minEnergy = values[i];
                 minIndex = i;
             }
         }
-        return new double[]{minEnergy, values[1][minIndex]};
+        return minIndex;
     }
 
     private int[] findSeam() {
         int[] seam = new int[width];
-        /* Create a temporary array to pass in as input for minEnergy() function. */
-        double[] temp = new double[height];
-        for (int i = 0; i < height; i++) {
-            temp[i] = i;
-        }
-        double[][] para = new double[2][];
-        para[0] = energyM[width - 1];
-        para[1] = temp;
-        int last = (int) minEnergy(para)[1];
-        for (int i = width - 1; i >= 0; i--) {
+        int last = minEnergy(energyM[width - 1]);
+        for (int i = width - 1; i > 0; i--) {
             seam[i] = last;
-            last = pathFrom[i][last];
+            int temp = minEnergy(touchingPixelsEnergy(i, last)[0]);
+            last = (int) touchingPixelsEnergy(i, last)[1][temp];
         }
+        seam[0] = last;
         return seam;
     }
 
