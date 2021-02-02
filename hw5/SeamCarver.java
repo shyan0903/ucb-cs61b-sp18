@@ -43,6 +43,9 @@ public class SeamCarver {
 
     /** Retrieve energy from array. */
     public double energy(int x, int y) {
+        if (x < 0 || x >= width || y < 0 || y >= height) {
+            throw new IndexOutOfBoundsException("Your input value is invalid.");
+        }
         return energyDB[x][y];
     }
 
