@@ -14,7 +14,7 @@ public class SeamCarver {
 
     /** Constructor. */
     public SeamCarver(Picture picture) {
-        this.picture = picture;
+        this.picture = new Picture(picture);
         width = picture.width();
         height = picture.height();
 
@@ -29,7 +29,7 @@ public class SeamCarver {
 
     /** Return a copy of the input picture to avoid changes. */
     public Picture picture() {
-        return new Picture(picture);
+        return picture;
     }
 
     /** Get the width of the picture. */
