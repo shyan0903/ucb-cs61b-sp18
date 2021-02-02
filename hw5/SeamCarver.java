@@ -29,7 +29,7 @@ public class SeamCarver {
 
     /** Return a copy of the input picture to avoid changes. */
     public Picture picture() {
-        return picture;
+        return new Picture(picture);
     }
 
     /** Get the width of the picture. */
