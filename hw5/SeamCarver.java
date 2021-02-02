@@ -18,17 +18,19 @@ public class SeamCarver {
         this.picture = picture;
         width = picture.width();
         height = picture.height();
+
         energyDB = new double[width][height];
         for (int col = 0; col < width; col++) {
             for (int row = 0; row < height; row++) {
                 energyDB[col][row] = calcEnergy(col, row);
             }
         }
+
     }
 
     /** Return a copy of the input picture to avoid changes. */
     public Picture picture() {
-        return new Picture(picture);
+        return picture;
     }
 
     /** Get the width of the picture. */
@@ -77,20 +79,6 @@ public class SeamCarver {
         width = transposed.length;
         height = transposed[0].length;
         return transposed;
-    }
-
-    public static void main(String[] args) {
-        Picture picture = new Picture("images/diagonals.png");
-        SeamCarver sc = new SeamCarver(picture);
-        for (int i :
-                sc.findHorizontalSeam()) {
-            System.out.print(i);
-        }
-        System.out.println("");
-        for (int i :
-                sc.findVerticalSeam()) {
-            System.out.print(i);
-        }
     }
 
     /**
