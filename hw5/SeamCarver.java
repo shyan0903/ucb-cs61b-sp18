@@ -11,7 +11,6 @@ public class SeamCarver {
     private double[][] energyDB;
     private int width, height;
     private double[][] energyM;
-    private int[][] pathFrom;
 
     /** Constructor. */
     public SeamCarver(Picture picture) {
@@ -30,7 +29,7 @@ public class SeamCarver {
 
     /** Return a copy of the input picture to avoid changes. */
     public Picture picture() {
-        return picture;
+        return new Picture(picture);
     }
 
     /** Get the width of the picture. */
@@ -184,10 +183,13 @@ public class SeamCarver {
     /** Remove horizontal seam from picture. */
     public void removeHorizontalSeam(int[] seam) {
         picture = SeamRemover.removeHorizontalSeam(picture, seam);
+//        need to change the height after removing
+        height = picture.height();
     }
     /** Remove vertical seam from picture. */
     public void removeVerticalSeam(int[] seam) {
         picture = SeamRemover.removeVerticalSeam(picture, seam);
+        width = picture.width();
     }
 
 }

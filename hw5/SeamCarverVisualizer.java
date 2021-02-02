@@ -51,8 +51,6 @@ public class SeamCarverVisualizer {
         for (int i = 0; i < N; i++) {
             int[] minSeam = sc.findVerticalSeam();
             Picture p = sc.picture();
-            System.out.println("width: " + sc.width() + " height: " + sc.height()
-            + "; " + minSeam.length);
             paintVerticalSeam(p, minSeam);
             show(p);
             sc.removeVerticalSeam(minSeam);
@@ -71,7 +69,6 @@ public class SeamCarverVisualizer {
 
     private void paintVerticalSeam(Picture p, int[] seam) {
         for (int i = 0; i < seam.length; i++) {
-            System.out.println(seam[i]);
             p.set(seam[i], i, new Color(255, 0, 0));
         }
     }
