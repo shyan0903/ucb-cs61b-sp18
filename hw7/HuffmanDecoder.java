@@ -1,11 +1,10 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * Decode a compressed file specified at args[0
  * and write the result to args[1].
- * */
+ */
 public class HuffmanDecoder {
     public static void main(String[] args) {
 
@@ -23,10 +22,10 @@ public class HuffmanDecoder {
         BitSequence bits = (BitSequence) or.readObject();
 
         List<Character> decodingList = new ArrayList<>();
-        while  (bits.length() > 0) {
-             Match matchResult = encodingTrie.longestPrefixMatch(bits);
-             decodingList.add(matchResult.getSymbol());
-             bits = bits.allButFirstNBits(matchResult.getSequence().length());
+        while (bits.length() > 0) {
+            Match matchResult = encodingTrie.longestPrefixMatch(bits);
+            decodingList.add(matchResult.getSymbol());
+            bits = bits.allButFirstNBits(matchResult.getSequence().length());
         }
         char[] decodingCharArray = new char[decodingList.size()];
         for (int i = 0; i < decodingCharArray.length; i++) {

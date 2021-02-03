@@ -65,9 +65,9 @@ public class HuffmanEncoder {
         list.add(temp2);
 
         for (List<File> l : list) {
-            System.out.format("%s" +
-                            " has been compressed by " + "%.2f" + "%% %n",
-                    l.get(0),
+            System.out.format("%s"
+                            + " has been compressed by "
+                            + "%.2f" + "%% %n", l.get(0),
                     (1 - (double) l.get(1).length() / l.get(0).length()) * 100);
         }
     }
