@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /** GIF maker for HugLife.
- *  To set this up, first install ImageMagick (http://www.imagemagick.org/script/binary-releases.php).
+ *  To set this up, first install ImageMagick (http://wwwwww.imagemagick.org/script/binary-releases.php).
  *  Then modify the IMAGEMAGICK constant below to point to the "convert" utility.
  *
  *  Note: If the simulation is terminated early (before MAX_CYCLES), frames close to the end may be left out of the GIF.

@@ -36,10 +36,18 @@ public class TestPlip {
 
     @Test
     public void testReplicate() {
-
+        Plip p = new Plip(2);
+        Plip baby = p.replicate();
+        assertNotSame(p, baby);
+        assertEquals(1, p.energy(), 0.01);
+        assertEquals(1, baby.energy(), 0.01);
+        Plip grandchild = baby.replicate();
+        assertNotSame(baby, grandchild);
+        assertEquals(0.5, baby.energy(), 0.01);
+        assertEquals(0.5, grandchild.energy(), 0.01);
     }
 
-    //@Test
+    @Test
     public void testChoose() {
         Plip p = new Plip(1.2);
         HashMap<Direction, Occupant> surrounded = new HashMap<Direction, Occupant>();
@@ -54,8 +62,13 @@ public class TestPlip {
 
         Action actual = p.chooseAction(surrounded);
         Action expected = new Action(Action.ActionType.STAY);
-
         assertEquals(expected, actual);
+
+        surrounded.put(Direction.BOTTOM, new Empty());
+        assertEquals(p.chooseAction(surrounded), new Action(Action.ActionType.REPLICATE, Direction.BOTTOM));
+
+        Plip low_energy_p = new Plip(0.2);
+        assertEquals(low_energy_p.chooseAction(surrounded), new Action(Action.ActionType.STAY));
     }
 
     public static void main(String[] args) {

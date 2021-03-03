@@ -46,18 +46,18 @@ public class HugLife {
      *  one entire cycle between 
      */
     public void simulate(int cycles) {
-        if (GENERATE_GIF) {
-            HugLifeAnimator.init(GIF_OUTPUT_FILENAME);
-        }
+//        if (GENERATE_GIF) {
+//            HugLifeAnimator.init(GIF_OUTPUT_FILENAME);
+//        }
         int cycleCount = 0;
         while (cycleCount < cycles) {
             boolean cycleCompleted = g.tic();
             if (cycleCompleted) {
                 g.drawWorld();
                 StdDraw.show(PAUSE_TIME_PER_SIMSTEP);
-                if (GENERATE_GIF) {
-                    HugLifeAnimator.saveGifFrame(cycleCount);
-                }
+//                if (GENERATE_GIF) {
+//                    HugLifeAnimator.saveGifFrame(cycleCount);
+//                }
                 cycleCount += 1;
             }
         }
@@ -119,9 +119,9 @@ public class HugLife {
             int y = in.readInt();
             switch (creature) {
                 //Uncomment this when you're ready to test out your clorus class
-                // case "clorus":
-                //     h.addCreature(x, y, new Clorus(1));
-                //     break;
+                 case "clorus":
+                     h.addCreature(x, y, new Clorus(1));
+                     break;
                 case "plip":
                     h.addCreature(x, y, new Plip());
                     break;
